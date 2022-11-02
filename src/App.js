@@ -3,10 +3,11 @@ import Map from './components/Map'
 import { useState } from 'react';
 import axios from 'axios';
 import SetLocationMap from './components/SetLOcationMap';
+// import "/leaflet/dist/leaflet.css"
+// import "/leaflet-draw/dist/leaflet.draw.css"
 
 //liabraries to be used with googleMaps
 const libraries = ['places','geometry']
-
 
 /*
 *  Start json-server --watch data/data.json
@@ -15,9 +16,6 @@ const libraries = ['places','geometry']
 *  You will have to refresh after signup call is sent. Because this is not Router DOM.
 *
 */
-
-
-
 function App() {
   const [name, setName] = useState('');
   const [pass, setPass] = useState('');
@@ -25,12 +23,6 @@ function App() {
   const [login ,setLogin] = useState(true);
   const [propdata, setData] = useState(null);
   const [signUp, setSignUp] = useState(false);
-
-
-
-
-
-
     const handleClick = async()=>{
         const data = await axios.get(`http://localhost:3000/dealers?Name=${name}`);
 
@@ -45,27 +37,24 @@ function App() {
           }
         }
   }
-
-
-
     const handleSignUpClick = ()=>{
       setSignUp(true);
       setLogin(false);
     }
 
   const {isLoaded} = useLoadScript({                                 //checks if completely loaded or not
-    googleMapsApiKey:'YOUR API KEY HERE',     //API key
+    googleMapsApiKey:'AIzaSyCY1oDgXTf55jiJBGLsiTsCgf9DyrlU66E',     //API key
     libraries:libraries
   })
 
   if(login){
     return <><input type={'text'} value={name} placeholder='Enter your Name here ...' onChange={(e)=>{setName(e.target.value)}} />
-    <input type={'password'} value={pass} placeholder='Enter your Password here ...' onChange={(e)=>{setPass(e.target.value)}} />
+    <input type={'password'} value={pass} placeholder='Enter your Password here...' onChange={(e)=>{setPass(e.target.value)}} />
     <button onClick={handleClick}>Submit</button>
     <button onClick={handleSignUpClick}>SignUp</button></>
   }
   else if(signUp){
-    if(!isLoaded) return <div>Loading ...</div>                       //if not is loaded returns a text Loading ....
+    if(!isLoaded) return <div>Loading ...</div>  //if not is loaded returns a text Loading ....
     return <SetLocationMap/>
     
   }

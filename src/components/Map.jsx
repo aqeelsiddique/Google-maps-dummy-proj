@@ -13,11 +13,18 @@ import {
 
 } from '@react-google-maps/api';
 import axios from 'axios';
+//////////////////////////////////////////////
+import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import ReactLeafletGoogleLayer from 'react-leaflet-google-layer';
+
+
+
+import { EditControl } from "react-leaflet-draw"
+import "leaflet/dist/leaflet.css"
+import "leaflet-draw/dist/leaflet.draw.css"
+/////////////////////////////////////////////////
 
 const DB_URL = 'http://localhost:3000/dealers';
-
-
-
 
 function get_polygon_centroid(pts) {
     var first = pts[0], last = pts[pts.length-1];
@@ -33,18 +40,17 @@ function get_polygon_centroid(pts) {
        x += (p1.lat + p2.lat - 2 * first.lat) * f;
        y += (p1.lng + p2.lng - 2 * first.lng) * f;
     }
+
     f = twicearea * 3;
     return { lat:x/f + first.lat, lng:y/f + first.lng };
  }
-
-
-
 const Map = ({data}) => {
     const [addCar, setaddCar] = useState([]);
     const [delalersLocation, setDealersLocation] = useState(null);
     const [markers, setMarkers] = useState([]);   //all markers (CARS) locations
     const [polygonCords, setPolygonCords] = useState([]);
-    const options = useMemo(()=>({ //<MapOptions>
+    const options = useMemo(()=>({ 
+        //<MapOptions>
         // disableDefaultUI: true,
         clickableIcons: false
     }),[])
@@ -88,11 +94,9 @@ const Map = ({data}) => {
             setMarkers([...markers,{carId:Math.random(),Brand:brand,location:{lat:e.latLng.lat(),lng:e.latLng.lng()}}])
             drawRect(e.latLng.lat(),e.latLng.lng(),5,10)
             console.log(inside({lat:e.latLng.lat(),lng:e.latLng.lng()},polygonCords));
+
         }
     }
-
-
-
 var NORTH = 0;
 var WEST  = -90;
 var SOUTH = 180;
@@ -150,19 +154,19 @@ const handleRemoval = (e)=>{
         array.splice(res2,1);
         setAddCars(array);
     }
+
     setFlag(!flag)
 
 }
 
-
-  return (
+return (
     <>
     <div>
         <button onClick={handleSubmitCars}>Submit Cars</button>
     </div>
     <div className="map">
         {delalersLocation && 
-            <GoogleMap
+            <MapContainer
             zoom={10} 
             center={delalersLocation}
             mapContainerStyle={{width:'100vw',height:'70vh'}}
@@ -170,6 +174,24 @@ const handleRemoval = (e)=>{
             onLoad={onLoad}
            
             >
+                <FeatureGroup>
+               <EditControl position='topright' 
+                // onCreated={_onCreate}
+                // onEdited = {_onEdited}
+                // onDeleted = {_onDeleted}
+                draw = {
+                    {
+                    rectangle: false,
+                    polyline: false,
+                    circle: false,
+                    circlemarker: false,
+                    marker: false,
+
+                    }
+                }
+
+                />
+            </FeatureGroup>
                 {/* {directions && <DirectionsRenderer directions={directions} options={{
                     polylineOptions:{
                         zIndex:50,
@@ -192,9 +214,8 @@ const handleRemoval = (e)=>{
                     onLoad={onLoad}
                     
                     />) }
-                </MarkerClusterer>
 
-                
+                </MarkerClusterer>
 
                 {
                     addCar.map(car=>
@@ -218,9 +239,7 @@ const handleRemoval = (e)=>{
                         // strokeOpacity: 0.8,
                         // strokeWeight: 2,
                         // fillColor: "#FF0000",
-                        fillOpacity: 0
-                    
-                        
+                        fillOpacity: 0                       
                     }}
                     onDblClick={(e)=>handleMarker(e)}
                     />
@@ -228,7 +247,7 @@ const handleRemoval = (e)=>{
                 </>
 
              
-            </GoogleMap>
+            </MapContainer>
         }
         </div>
         </>
